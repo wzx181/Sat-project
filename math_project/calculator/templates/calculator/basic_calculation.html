@@ -1,0 +1,148 @@
+{% extends 'calculator/base.html' %}
+
+{% block content %}
+<h2 style="text-align: center;">基础计算器</h2>
+
+<div class="calculator-container">
+    <div class="input-container">
+        <input type="text" id="input" placeholder="输入表达式" readonly>
+    </div>
+    <div class="button-container">
+        <button onclick="appendToInput('7')">7</button>
+        <button onclick="appendToInput('8')">8</button>
+        <button onclick="appendToInput('9')">9</button>
+        <button onclick="appendToInput('/')">/</button>
+
+        <button onclick="appendToInput('4')">4</button>
+        <button onclick="appendToInput('5')">5</button>
+        <button onclick="appendToInput('6')">6</button>
+        <button onclick="appendToInput('*')">*</button>
+
+        <button onclick="appendToInput('1')">1</button>
+        <button onclick="appendToInput('2')">2</button>
+        <button onclick="appendToInput('3')">3</button>
+        <button onclick="appendToInput('-')">-</button>
+
+        <button onclick="appendToInput('0')">0</button>
+        <button onclick="appendToInput(',')">,</button>
+        <button onclick="appendToInput('.')">.</button>
+        <button onclick="appendToInput('+')">+</button>
+        <button onclick="appendToInput('(')">(</button>
+        <button onclick="appendToInput(')')">)</button>
+        
+
+        <button onclick="appendToInput('√(')">√</button>
+        <button onclick="appendToInput('e^')">e^</button>
+        <button onclick="appendToInput('ln(')">ln</button>
+        <button onclick="appendToInput('sin(')">sin</button>
+        <button onclick="appendToInput('cos(')">cos</button>
+        <button onclick="appendToInput('tan(')">tan</button>
+        <!--
+        <button onclick="appendToInput('arcsin(')">arcsin</button>
+        <button onclick="appendToInput('arccos(')">arccos</button>
+        <button onclick="appendToInput('arctan(')">arctan</button>
+        -->
+        <button onclick="appendToInput('C(')">C(m,n)</button>
+        <button onclick="appendToInput('A(')">A(m,n)</button>
+
+        <button onclick="appendToInput('log(')">log(m,n)</button>
+        <button onclick="appendToInput('^')">^</button>
+        <button onclick="appendToInput('!')">!</button>
+        <button onclick="appendToInput('π')">π</button>
+
+        <button onclick="clearInput()">C</button>
+        <button onclick="deleteLast()">⌫</button>
+        <button onclick="calculateResult()">=</button>
+    </div>
+</div>
+
+<p id="result" style="text-align: center;">{{ result }}</p>
+
+<script>
+    function appendToInput(value) {
+        document.getElementById('input').value += value;
+    }
+
+    function clearInput() {
+        document.getElementById('input').value = '';
+        document.getElementById('result').innerText = '';
+    }
+
+    function deleteLast() {
+        const input = document.getElementById('input');
+        input.value = input.value.slice(0, -1);
+    }
+
+    function calculateResult() {
+        const input = document.getElementById('input').value;
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'expression=' + encodeURIComponent(input)
+        })
+        .then(response => response.json()) // 将返回类型改为 JSON
+        .then(data => {
+            document.getElementById('result').innerText = data.result; // 只更新结果部分
+        })
+        .catch(error => {
+            document.getElementById('result').innerText = '错误: ' + error;
+        });
+    }
+</script>
+
+<style>
+    .calculator-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .input-container {
+        text-align: center;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .input-container input {
+        width: 100%;
+        padding: 10px;
+        font-size: 18px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .button-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .button-container button {
+        padding: 15px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    .button-container button:hover {
+        background-color: #f0f0f0;
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+
+
+
+

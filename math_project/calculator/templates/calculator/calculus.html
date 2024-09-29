@@ -1,0 +1,83 @@
+{% extends 'calculator/base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微积分</title>
+    <style>
+        .button-container { margin: 10px 0; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <main>
+        <h2>微积分</h2>
+        <form method="POST" id="calculus-form">
+            {% csrf_token %}
+            <input type="text" name="function" placeholder="输入函数或方程，例如 x^2 或 f(x)=0" required>
+            <div class="button-container">
+                <button type="button" onclick="appendToFunction(' + ')">+</button>
+                <button type="button" onclick="appendToFunction(' - ')">-</button>
+                <button type="button" onclick="appendToFunction(' * ')">×</button>
+                <button type="button" onclick="appendToFunction(' / ')">÷</button>
+                <button type="button" onclick="appendToFunction('(')"> ( </button>
+                <button type="button" onclick="appendToFunction(')')"> ) </button>
+                <button type="button" onclick="appendToFunction('.')">.</button>
+                <button type="button" onclick="appendToFunction('^')">^</button>
+                <button type="button" onclick="appendToFunction('sqrt(')">√</button>
+                <button type="button" onclick="appendToFunction('exp(')">e</button>
+                <button type="button" onclick="appendToFunction('pi')">π</button>
+                <button type="button" onclick="appendToFunction('ln(')">ln</button>
+                <button type="button" onclick="appendToFunction('sin(')">sin</button>
+                <button type="button" onclick="appendToFunction('cos(')">cos</button>
+                <button type="button" onclick="appendToFunction('x')">x</button>
+                <button type="button" onclick="appendToFunction('y')">y</button>
+                <button type="button" onclick="appendToFunction('z')">z</button>
+                <button type="button" onclick="appendToFunction('=')">=</button>
+                <button type="button" onclick="clearFunction()">清除</button>
+                <button type="submit">计算</button>
+            </div>
+        </form>
+
+        {% if result %}
+            <h3>结果</h3>
+            <p>导数: {{ result.derivative }}</p>
+            <p>原函数: {{ result.integral }}</p>
+            <p>隐函数求导: {{ result.implicit_derivative }}</p>
+        {% endif %}
+
+        {% if graph %}
+            <h3>函数图像</h3>
+            <img src="data:image/png;base64,{{ graph }}" alt="函数图像"/>
+        {% endif %}
+    </main>
+
+    <script>
+        function appendToFunction(value) {
+            const input = document.querySelector('input[name="function"]');
+            input.value += value;
+        }
+
+        function clearFunction() {
+            const input = document.querySelector('input[name="function"]');
+            input.value = '';
+        }
+
+        document.getElementById('calculus-form').addEventListener('submit', function(event) {
+            const input = document.querySelector('input[name="function"]').value;
+            const equalSigns = (input.match(/=/g) || []).length;
+
+            if (equalSigns > 2) {
+                event.preventDefault();
+                alert("只允许一个等号。");
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
+
+

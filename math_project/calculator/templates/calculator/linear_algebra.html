@@ -1,0 +1,102 @@
+{% extends 'calculator/base.html' %}
+
+{% block content %}
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-item {
+            margin-bottom: 20px;
+            width: 80%;
+        }
+        textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        button {
+            width: 100%;
+            background-color: #8a8b8a;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h3 {
+            text-align: center;
+        }
+    </style>
+
+    <div class="form-container">
+        <h3>线性代数</h3>
+        <form method="POST" class="form-item">
+            {% csrf_token %}
+            <textarea name="matrix" placeholder="输入矩阵，例如 [[1, 2], [3, 4]]" required></textarea>
+            <select name="operation">
+                <option value="add">矩阵加法</option>
+                <option value="subtract">矩阵减法</option>
+                <option value="multiply">矩阵乘法</option>
+                <option value="inverse">矩阵求逆</option>
+                <option value="properties">矩阵属性</option>
+            </select>
+            <textarea name="matrix2" placeholder="输入第二个矩阵（仅在加法、减法或乘法时需要）"></textarea>
+            <button type="submit">计算</button>
+        </form>
+
+        {% if result %}
+            {% if result.error %}
+                <script>
+                    alert("{{ result.error }}");
+                </script>
+            {% endif %}
+            {% if result.result is not none %}
+                <p>结果: {{ result.result }}</p>
+            {% endif %}
+            {% if result.shape %}
+                <p>维数: {{ result.shape }}</p>
+                <p>秩: {{ result.rank }}</p>
+                <p>行列式: {{ result.det }}</p>
+                <p>特征值: {{ result.eigenvalues }}</p>
+                <p>特征向量: {{ result.eigenvectors }}</p>
+            {% endif %}
+        {% endif %}
+
+        <h3>解线性方程组</h3>
+        <form method="POST" class="form-item">
+            {% csrf_token %}
+            <textarea name="matrix" placeholder="输入矩阵A，例如 [[1, 2], [3, 4]]" required></textarea>
+            <textarea name="b" placeholder="输入向量b，例如 [1, 2]" required></textarea>
+            <button type="submit" name="operation" value="solve_system">解线性方程组</button>
+        </form>
+        
+        {% if result.solution %}
+            <p>解: {{ result.solution }}</p>
+        {% endif %}
+
+        <h3>线性规划</h3>
+        <form method="POST" class="form-item">
+            {% csrf_token %}
+            <textarea name="c" placeholder="输入目标函数c，例如 [1, -1]" required></textarea>
+            <textarea name="matrix" placeholder="输入约束条件A，例如 [[1, 2], [3, 4]]" required></textarea>
+            <textarea name="b" placeholder="输入向量b，例如 [1, 2]" required></textarea>
+            <select name="optimization">
+                <option value="max">最大化</option>
+                <option value="min">最小化</option>
+            </select>
+            <button type="submit" name="operation" value="solve_lp">求解线性规划</button>
+        </form>
+
+        {% if result.lp_solution %}
+            <p>解: {{ result.lp_solution }}</p>
+        {% endif %}
+        {% if result.lp_status %}
+            <p>状态: {{ result.lp_status }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
